@@ -1,24 +1,21 @@
 library(shiny)
-library(ggplot2) 
+library(DT)
+dialdata<-read.csv("C:/Users/dialdata.csv",header=T,sep=",")
+duedata<-read.csv("C:/Users/duedata.csv",header=T,sep=",")
+dialdata<-as.data.frame(dialdata)
+duedata<-as.data.frame(duedata)
 shinyServer(function(input, output) {
-  
-  output$main_plot <- renderPlot({
-    
-    hist(faithful$eruptions,
-         probability = TRUE,
-         breaks = as.numeric(input$n_breaks),
-         xlab = "Duration (minutes)",
-         main = "Geyser eruption duration")
-    
-    if (input$individual_obs) {
-      rug(faithful$eruptions)
-    }
-    
-    if (input$density) {
-      dens <- density(faithful$eruptions,
-                      adjust = input$bw_adjust)
-      lines(dens, col = "blue")
-    }
-    
+  datasetInput <- reactive({
+    switch(input$dataset,
+          "a" = dialdata,
+          "b" = duedata)
   })
+  output$summary <- renderPrint({
+    dataset <- datasetInput()
+    summary(dataset)
+  })
+  output$table <- DT::renderDataTable(DT::datatable({
+    datasetInput()
+  }, rownames = FALSE,class ='cell-border stripe' ))
+
 })
