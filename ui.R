@@ -1,31 +1,22 @@
-library(httpuv)
-library(htmltools)
-library(digest)
 library(shiny)
-library(ggplot2) 
-
-shinyUI(bootstrapPage(
-  
-  selectInput(inputId = "n_breaks",
-              label = "Number of bins in histogram (approximate):",
-              choices = c(10, 20, 35, 50),
-              selected = 20),
-  
-  checkboxInput(inputId = "individual_obs",
-                label = strong("Show individual observations"),
-                value = FALSE),
-  
-  checkboxInput(inputId = "density",
-                label = strong("Show density estimate"),
-                value = FALSE),
-  
-  plotOutput(outputId = "main_plot", height = "300px"),
-  
-  # Display this only if the density is shown
-  conditionalPanel(condition = "input.density == true",
-                   sliderInput(inputId = "bw_adjust",
-                               label = "Bandwidth adjustment:",
-                               min = 0.2, max = 2, value = 1, step = 0.2)
+library(DT)
+shinyUI(
+  pageWithSidebar(
+    headerPanel("我的测试shiny"),
+    sidebarPanel(
+      selectInput("dataset", "选择数据表:", 
+                  list("外呼监控——拨出时间" = "a", 
+                       "外呼监控——到期时间" = "b" 
+                      ))
+    ),
+    
+    mainPanel(
+      
+      
+      DT::dataTableOutput("table"),
+      h3("统计指标"), 
+      verbatimTextOutput("summary")
+      
+    )
   )
-  
-))
+)
